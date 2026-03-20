@@ -51,7 +51,7 @@ class MainActivity : ComponentActivity() {
             LemonadeTheme {
 
                 var currentStep by remember { mutableIntStateOf(1) }
-
+                var squeezeCount by remember { mutableIntStateOf(0) }
                 Scaffold(
                     topBar = {
                         TopAppBar(
@@ -108,11 +108,23 @@ class MainActivity : ComponentActivity() {
                                 painter = painterResource(id = imageRes),
                                 contentDescription = stringResource(contentDescRes),
                                 modifier = Modifier.clickable {
-                                    currentStep = when (currentStep) {
-                                        1 -> 2
-                                        2 -> 3
-                                        3 -> 4
-                                        else -> 1
+                                    when (currentStep) {
+                                        1 -> {
+                                            currentStep = 2
+                                            squeezeCount = (2..4).random()
+                                        }
+                                        2 -> {
+                                            squeezeCount--
+                                            if (squeezeCount == 0) {
+                                                currentStep = 3
+                                            }
+                                        }
+                                        3 -> {
+                                            currentStep = 4
+                                        }
+                                        4 -> {
+                                            currentStep = 1
+                                        }
                                     }
                                 }
                             )
