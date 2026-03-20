@@ -184,6 +184,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.lemonade.ui.theme.LemonadeTheme
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.ui.graphics.graphicsLayer
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -203,7 +206,7 @@ fun LemonadeApp() {
 
     var currentStep by remember { mutableIntStateOf(1) }
     var squeezeCount by remember { mutableIntStateOf(0) }
-
+    var isPressed by remember { mutableStateOf(false) }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -243,6 +246,11 @@ fun LemonadeApp() {
             else -> R.string.empty_glass_cd
         }
 
+        val scale by animateFloatAsState(
+            targetValue = if (isPressed) 0.9f else 1f,
+            label = "scaleAnimation"
+        )
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -260,22 +268,35 @@ fun LemonadeApp() {
                 Image(
                     painter = painterResource(id = imageRes),
                     contentDescription = stringResource(contentDescRes),
-                    modifier = Modifier.clickable {
-                        when (currentStep) {
-                            1 -> {
-                                currentStep = 2
-                                squeezeCount = (2..4).random()
+                    modifier = Modifier
+                        .graphicsLayer(
+                            scaleX = scale,
+                            scaleY = scale
+                        )
+                        .clickable {
+                            isPressed = true
+
+                            // Delay reset slightly so animation is visible
+                            kotlinx.coroutines.GlobalScope.launch {
+                                kotlinx.coroutines.delay(100)
+                                isPressed = false
                             }
-                            2 -> {
-                                squeezeCount--
-                                if (squeezeCount == 0) {
-                                    currentStep = 3
+
+                            when (currentStep) {
+                                1 -> {
+                                    currentStep = 2
+                                    squeezeCount = (2..4).random()
                                 }
+                                2 -> {
+                                    squeezeCount--
+                                    if (squeezeCount == 0) {
+                                        currentStep = 3
+                                    }
+                                }
+                                3 -> currentStep = 4
+                                4 -> currentStep = 1
                             }
-                            3 -> currentStep = 4
-                            4 -> currentStep = 1
                         }
-                    }
                 )
             }
 
