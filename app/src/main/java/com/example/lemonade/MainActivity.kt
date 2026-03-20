@@ -249,6 +249,7 @@ fun LemonadeApp() {
                 .padding(innerPadding),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
+
         ) {
 
             Box(
@@ -284,6 +285,13 @@ fun LemonadeApp() {
                 text = stringResource(textRes),
                 fontSize = 18.sp
             )
+            if (currentStep == 2) {
+                Text(
+                    text = "Squeezes left: $squeezeCount",
+                    fontSize = 16.sp,
+                    color = Color.Gray
+                )
+            }
         }
     }
 }
